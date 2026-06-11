@@ -179,9 +179,9 @@ pixel trace(vec ray, vec init, int depth);
 pixel blend (vec ray, vec init, vec ref, sphere S, vec point, int depth)
 {
     pixel img = {
-        80 + 30*shiny_illu(ray, init, S) + 30*diff_illu(ray, init, S) + 25*trace(ref, point, depth - 1).r / pow(depth, 3),
-        80 + 30*shiny_illu(ray, init, S) + 30*diff_illu(ray, init, S) + 25*trace(ref, point, depth - 1).g / pow(depth, 3),
-        80 + 30*shiny_illu(ray, init, S) + 30*diff_illu(ray, init, S) + 25*trace(ref, point, depth - 1).b / pow(depth, 3)
+        80 + 30*shiny_illu(ray, init, S) + 30*diff_illu(ray, init, S) + 20*trace(ref, point, depth - 1).r / pow(depth, 4),
+        80 + 30*shiny_illu(ray, init, S) + 30*diff_illu(ray, init, S) + 20*trace(ref, point, depth - 1).g / pow(depth, 4),
+        80 + 30*shiny_illu(ray, init, S) + 30*diff_illu(ray, init, S) + 20*trace(ref, point, depth - 1).b / pow(depth, 4)
     };
 
     return img;
@@ -283,7 +283,37 @@ int main()
                 j - camera.x, i - camera.y, screen
             };
 
-            image[i][j] = trace(dirn, camera, 10);
+            vec dirn2 = {
+                j - camera2.x, i - camera2.y, screen
+            };
+
+            vec dirn3 = {
+                j - camera3.x, i - camera3.y, screen
+            };
+
+            vec dirn4 = {
+                j - camera4.x, i - camera4.y, screen
+            };
+
+            image[i][j] = (pixel) {
+                (trace(dirn, camera, 6).r + trace(dirn2, camera2, 6).r +
+                 trace(dirn3, camera3, 6).r + trace(dirn4, camera4, 6).r)/4,
+                (trace(dirn, camera, 6).g + trace(dirn2, camera2, 6).g +
+                 trace(dirn3, camera3, 6).g + trace(dirn4, camera2, 6).g)/4,
+                (trace(dirn, camera, 6).b + trace(dirn2, camera2, 6).b +
+                 trace(dirn3, camera3, 6).b + trace(dirn4, camera2, 6).b)/4
+            };
+        }
+    }
+
+    for (int i = 0; i < H - 1; i++)
+    {
+        for (int j = 0; j < W - 1; j++)
+        {
+            if (image[i][j].r == 0 && image[i][j].g == 0 && image[i][j].b == 20 && (i % 100 == 0 || j % 100 == 0))
+            {
+                image[i][j] = (pixel) {20, 50, 80};
+            } 
         }
     }
 
